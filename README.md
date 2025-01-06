@@ -126,14 +126,32 @@ Then, we will create a blank bot with the existing role, leaving everything defa
 
 ```
 aws lexv2-models create-bot \
- --bot-name "Caracciolo Chatbot" \
+ --bot-name "Caracciolo_Chatbot" \
  --description "A blank bot for conversational interfaces" \
  --role-arn "arn:aws:iam::137068224350:role/CaraccioloChatboteRole" \
- --data-privacy '{"childDirected": fasle}' \
+ --data-privacy '{"childDirected": false}' \
  --idle-session-ttl-in-seconds 300 \
- --region "us-east-1
+ --region "us-east-1"
 ```
 
+Next, we will create the locale of the bot as 'Japanese', and build it so that it is functional:
+
+```
+aws lexv2-models create-bot-locale \
+   --bot-id "<AAIICUSHKT>" \
+   --bot-version "DRAFT" \
+   --locale-id "ja-JP" \
+   --nlu-intent-confidence-threshold 0.40 \
+   --region "us-east-1"
+   --role-arn "arn:aws:iam::137068224350:role/CaraccioloChatboteRole" \
+```
+
+```
+aws lexv2-models build-bot-locale \
+ --bot-id "<AAIICUSHKT>" \
+ --locale-id "ja-JP" \
+ --region "us-east-1"
+```
 3. **Specify Intents and Slots**  
 
 
