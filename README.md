@@ -37,22 +37,111 @@ For HR support, the chatbot can handle queries about policies, leave requests, o
 
 
 
-![image](/assets/image1.png)
-![image](/assets/image2.png)
+
 
 <h2>How to Build</h2>
 
-1. **Create an empty chatbot**  
+1. **Create IAM Roles for the Tools along with creation of our empty chatbot**  
+In this step, we will create the bot to start our project. We will showcase both AWS console and AWS CLI scenarios, as well as define IAM roles necessary to execute the functions.
+
+**AWS Console option**
+
+![image](/assets/image1.png)
+
+**AWS CLI option**
+With this option we will be utilizing AWS CLI through the cloudshell. 
+
+First, we create an IAM role specific for Amazon Lex, Lambda and Amazon Translate usage. Make sure that the --role-name applies to the role name you want to assign:
+
+Amazon Lex 
+```
+aws iam create-role \
+    --role-name CaraccioloChatbotRole \
+    --assume-role-policy-document '{
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Principal": {
+                    "Service": "lex.amazonaws.com"
+                },
+                "Action": "sts:AssumeRole"
+            }
+        ]
+    }'
+```
+AWS Lambda and Amazon Translate
+
+```
+aws iam create-role \
+    --role-name LambdaTranslateRole \
+    --assume-role-policy-document '{
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Effect": "Allow",
+                "Principal": {
+                    "Service": "lambda.amazonaws.com"
+                },
+                "Action": "sts:AssumeRole"
+            }
+        ]
+    }'
+```
+
+Amazon Translate
+
+Then, Attach a policy to give the necessary permissions to the roles:
+
+Amazon Lex:
+```
+aws iam attach-role-policy \
+    --role-name CaraccioloChatbotRole \
+    --policy-arn arn:aws:iam::aws:policy/AmazonLexFullAccess
+```
+
+Amazon Translate:
+```
+aws iam attach-role-policy \
+    --role-name LambdaTranslateRole \
+    --policy-arn arn:aws:iam::aws:policy/TranslateFullAccess
+```
+
+Lambda:
+```
+aws iam attach-role-policy \
+    --role-name LambdaTranslateRole \
+    --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+```
 
 
-2. **Specify intent**  
+We can always check if the role is present along with attached policies using the following command:
+```
+aws iam list-attached-role-policies \
+    --role-name Rolename
+```
+Make sure to change the 'Rolename' value to the roles that you have created and want to check. 
+
+Then, we will create a blank bot with the existing role, leaving everything default except for option 'No' on option Children's Online Privacy Protection Act (COPPA)
+
+```
+aws lexv2-models create-bot \
+ --bot-name "Caracciolo Chatbot" \
+ --description "A blank bot for conversational interfaces" \
+ --role-arn "arn:aws:iam::137068224350:role/CaraccioloChatboteRole" \
+ --data-privacy '{"childDirected": fasle}' \
+ --idle-session-ttl-in-seconds 300 \
+ --region "us-east-1
+```
+
+3. **Specify Intents and Slots**  
 
 
 
-3. **Create and test Lambda function**
+4. **Create and test Lambda function**
 
 
-4. **Final results - Testing the Chatbot**
+5. **Final results - Testing the Chatbot**
 
 
  ---
