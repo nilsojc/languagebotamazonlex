@@ -19,7 +19,14 @@ In this project, I created a language translation bot where you can input a word
   - Python
   - AWS SDK 
 
-  
+ <h2>🌟 Features 🌟</h2>
+ 
+🌐 Natural Language Understanding: Recognizes user intents and extracts key details for accurate translations.
+🗣️ Voice and Text Input: Accepts both spoken and typed translation requests.
+🔄 Multi-Turn Conversations: Handles follow-up questions like “Which language do you want?” for smooth interactions.
+🚀 AWS Integration: Leverages Amazon Translate for translations, Polly for voice responses, and Lambda for backend logic.
+🛠️ Customizable Responses: Provides personalized translations, e.g., “The translation for ‘hello’ in French is ‘bonjour.’” 
+
 <h2>Real World applications</h2>  
 
 
@@ -341,11 +348,11 @@ Then, we will set the lambda function within the test draft
 
 And done! We can test the chatbot with prompts.
 
-
+![image](/assets/image21.png)
 
 
  ---
 
 <h2>Conclusion</h2>
-
+With this project, I learned a lot about integration of lambda functions with AWS services, and how many scripts can be automated with the boto3 SDK for python, as well as creation of a high-level chatbot that can be integrated in a website and can be autuomated with Amazon Bedrock!
 
