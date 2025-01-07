@@ -46,7 +46,11 @@ In this step, we will create the bot to start our project. We will showcase both
 
 **AWS Console option**
 
-![image](/assets/image1.png)
+We will be creating it through the console in this part. We will go through Amazon lex, and create a bot with English language and set `Intent classification confidence score threshold` as 0.40.
+
+![image](/assets/image2.png)
+![image](/assets/image3.png)
+![image](/assets/image4.png)
 
 **AWS CLI option**
 With this option we will be utilizing AWS CLI through the cloudshell. 
@@ -140,7 +144,7 @@ Next, we will create the locale of the bot as 'Japanese', and build it so that i
 aws lexv2-models create-bot-locale \
    --bot-id "<AAIICUSHKT>" \
    --bot-version "DRAFT" \
-   --locale-id "ja-JP" \
+   --locale-id "en-EN" \
    --nlu-intent-confidence-threshold 0.40 \
    --region "us-east-1"
    --role-arn "arn:aws:iam::137068224350:role/CaraccioloChatboteRole" \
@@ -149,12 +153,44 @@ aws lexv2-models create-bot-locale \
 ```
 aws lexv2-models build-bot-locale \
  --bot-id "<AAIICUSHKT>" \
- --locale-id "ja-JP" \
+ --locale-id "en-EN" \
  --region "us-east-1"
 ```
-3. **Specify Intents and Slots**  
+3. **Specify Intents and Slots**
+   
+   For this step, we need to understand the meaning behind the variables found in amazon lex:
+   
+- Intent: The goal or purpose behind what the user is saying.
+- Utterance: The actual words or phrases spoken or typed by the user.
+- Slots: Specific pieces of information or variables within the user's utterance that the system needs to extract.
+- Fulfilment: The action or response that the system takes based on the user's intent and the information provided in the slots.
+
+  We will define the conversational flow of the chatbot through these variables, by defining the intent and the utterance:
+  
+![image](/assets/image5.png)
+![image](/assets/image6.PNG)
+
+Then, we will create a new slot type. With this, we will specify the language to be translated from the variable.
+
+ ![image](/assets/image7.PNG)
+
+ We will then set the value of the languages to be used for translation:
+ 
+ ![image](/assets/image8.PNG)
+ 
+Next, we will add a slot in the intent where we will define a prompt
 
 
+ ![image](/assets/image9.png)
+
+  
+Then, set another slot called 'text' that will take the text translated as input.
+
+![image](/assets/image10.png)
+
+We can tailor this further by specifying the slot we created in the sample utterances
+
+![image](/assets/image11.png)
 
 4. **Create and test Lambda function**
 
