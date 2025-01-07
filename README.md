@@ -16,6 +16,8 @@ In this project, I created a language translation bot where you can input a word
   - AWS Lambda
   - IAM (for managing user permissions)
   - Amazon Translate
+  - Python
+  - AWS SDK 
 
   
 <h2>Real World applications</h2>  
@@ -156,7 +158,7 @@ aws lexv2-models build-bot-locale \
  --locale-id "en-EN" \
  --region "us-east-1"
 ```
-3. **Specify Intents and Slots**
+3. **Specify Intents, Slots and Fulfilments in Amazon Lex**
    
    For this step, we need to understand the meaning behind the variables found in amazon lex:
    
@@ -172,30 +174,167 @@ aws lexv2-models build-bot-locale \
 
 Then, we will create a new slot type. With this, we will specify the language to be translated from the variable.
 
- ![image](/assets/image7.PNG)
+![image](/assets/image7.PNG)
 
  We will then set the value of the languages to be used for translation:
  
- ![image](/assets/image8.PNG)
+![image](/assets/image8.PNG)
  
-Next, we will add a slot in the intent where we will define a prompt
+Next, we will add a slot in the intent where we will define a prompt.
 
 
- ![image](/assets/image9.png)
+![image](/assets/image9.png)
 
   
 Then, set another slot called 'text' that will take the text translated as input.
 
 ![image](/assets/image10.png)
 
-We can tailor this further by specifying the slot we created in the sample utterances
+We can tailor this further by specifying the slot we created in the sample utterances.
 
 ![image](/assets/image11.png)
+This will automatically understand the language slot type if already specified and ask for the input text to be translated directly.
+
+We will also be adding an initial response to the chatbot
+
+![image](/assets/image12.png)
+
+Finally, we will be pointing a lambda function through a specified fulfilment with an initial and closing response. With this, Lambda will fulfil the intent and inform users about it’s status once it is complete.
+
+![image](/assets/image13.png)
+![image](/assets/image14.png)
+
 
 4. **Create and test Lambda function**
 
+In this step we will creating the lambda function with python as the runtime.
+
+![image](/assets/image15.png)
+![image](/assets/image16.png)
+
+We will then input our code:
+
+```
+import boto3
+
+def lambda_handler(event, context):
+    try:
+        input_text = event['sessionState']['intent']['slots']['text']['value']['interpretedValue'].strip()
+        language_slot = event['sessionState']['intent']['slots']['language']['value']['interpretedValue']
+
+        if not input_text:
+            raise ValueError("Input text is empty.")
+
+        language_codes = {
+            'French': 'fr',
+            'Japanese': 'ja',
+            'Spanish': 'es',
+            'Korean': 'ko'
+        }
+
+
+        if language_slot not in language_codes:
+            raise ValueError(f"Unsupported language: {language_slot}")
+
+        target_language_code = language_codes[language_slot]
+
+        # Initialize the Amazon Translate client
+        translate_client = boto3.client('translate')
+
+        # Call Amazon Translate to perform translation
+        response = translate_client.translate_text(
+            Text=input_text,
+            SourceLanguageCode='auto',  # Auto-detect source language
+            TargetLanguageCode=target_language_code
+        )
+
+        translated_text = response['TranslatedText']
+
+        lex_response = {
+            "sessionState": {
+              "dialogAction": {
+                  "type" : "Close"
+              },
+              "intent" : {
+                "name" : "TranslateIntent", #Add your Intent Name
+                "state" : "Fulfilled"
+              }
+            },
+            "messages": [
+                {
+                    "contentType": "PlainText",
+                    "content": translated_text
+                }
+            ]
+        }
+
+        return lex_response
+
+    except Exception as error:
+        error_message = "Lambda execution error: " + str(error)
+        print(error_message)
+        lex_error_response = {
+            "sessionState": {
+              "dialogAction": {
+                  "type" : "Close"
+              },
+              "intent" : {
+                "name" : "TranslateIntent",
+                "state" : "Fulfilled"
+              }
+            },
+            "messages": [
+                {
+                    "contentType": "PlainText",
+                    "content": error_message
+                }
+            ]
+        }
+
+        return lex_error_response
+```
+
+In the structure of the code we are generating `user input`, defining `language code` and error handling. 
+
+We then deploy the function in lambda.
+
+![image](/assets/image17.png)
+
+Finally, we will create a test function with a JSON in order to generate input from amazon lex.
+
+![image](/assets/image18.png)
+
+ ```{
+  "sessionState": {
+    "intent": {
+      "name": "TranslateIntent",
+      "slots": {
+        "text": {
+          "value": {
+            "interpretedValue": "Hello",
+            "originalValue": "Hello"
+          }
+        },
+        "language": {
+          "value": {
+            "interpretedValue": "French",
+            "originalValue": "French"
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+Once done, we will click on 'test' to test the function.
 
 5. **Final results - Testing the Chatbot**
+
+We will go to the intents page in amazon lex and click test.
+
+![image](/assets/image19.png)
+
 
 
  ---
