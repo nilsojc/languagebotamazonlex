@@ -335,6 +335,13 @@ We will go to the intents page in amazon lex and click test.
 
 ![image](/assets/image19.png)
 
+Then, we will set the lambda function within the test draft
+
+![image](/assets/image20.png)
+
+And done! We can test the chatbot with prompts.
+
+
 
 
  ---
