@@ -22,9 +22,13 @@ In this project, I created a language translation bot where you can input a word
  <h2>🌟 Features 🌟</h2>
  
 🌐 Natural Language Understanding: Recognizes user intents and extracts key details for accurate translations.
+
 🗣️ Voice and Text Input: Accepts both spoken and typed translation requests.
+
 🔄 Multi-Turn Conversations: Handles follow-up questions like “Which language do you want?” for smooth interactions.
+
 🚀 AWS Integration: Leverages Amazon Translate for translations, Polly for voice responses, and Lambda for backend logic.
+
 🛠️ Customizable Responses: Provides personalized translations, e.g., “The translation for ‘hello’ in French is ‘bonjour.’” 
 
 <h2>Real World applications</h2>  
